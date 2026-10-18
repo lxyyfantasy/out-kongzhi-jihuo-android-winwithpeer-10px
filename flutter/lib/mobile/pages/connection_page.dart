@@ -86,7 +86,7 @@ class _ConnectionPageState extends State<ConnectionPage> {
       children: [
         if (!bind.isDisableAccount())
           Padding(
-            padding: const EdgeInsets.only(top: 20),
+            padding: const EdgeInsets.only(top: 60),
             child: ListTile(
               leading: Obx(() {
                 final avatar = bind.mainResolveAvatarUrl(
