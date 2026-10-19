@@ -71,19 +71,25 @@ Future<bool?> registerDialog() async {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(translate('注册')).marginOnly(top: MyTheme.dialogPadding),
-        InkWell(
-          child: Icon(
-            Icons.close,
-            size: 25,
-            color: Theme.of(context)
-                .textTheme
-                .titleLarge
-                ?.color
-                ?.withOpacity(0.55),
+        Padding(
+          padding: EdgeInsets.only(top: MyTheme.dialogPadding),
+          child: Text(translate('注册')),
+        ),
+        Padding(
+          padding: EdgeInsets.only(top: 10, right: 15),
+          child: InkWell(
+            child: Icon(
+              Icons.close,
+              size: 25,
+              color: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.color
+                  ?.withOpacity(0.55),
+            ),
+            onTap: onCancel,
           ),
-          onTap: onCancel,
-        ).marginOnly(top: 10, right: 15),
+        ),
       ],
     );
 

@@ -75,19 +75,25 @@ Future<bool?> changePasswordDialog() async {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(translate('修改密码')).marginOnly(top: MyTheme.dialogPadding),
-        InkWell(
-          child: Icon(
-            Icons.close,
-            size: 25,
-            color: Theme.of(context)
-                .textTheme
-                .titleLarge
-                ?.color
-                ?.withOpacity(0.55),
+        Padding(
+          padding: EdgeInsets.only(top: MyTheme.dialogPadding),
+          child: Text(translate('修改密码')),
+        ),
+        Padding(
+          padding: EdgeInsets.only(top: 10, right: 15),
+          child: InkWell(
+            child: Icon(
+              Icons.close,
+              size: 25,
+              color: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.color
+                  ?.withOpacity(0.55),
+            ),
+            onTap: onCancel,
           ),
-          onTap: onCancel,
-        ).marginOnly(top: 10, right: 15),
+        ),
       ],
     );
 
@@ -146,7 +152,6 @@ Future<bool?> changePasswordDialog() async {
 
   if (res == true) {
     showToast(translate('密码修改成功'));
-    // 改密后退出登录，强制用新密码重新登录
     await gFFI.userModel.logOut();
   }
   return res;
