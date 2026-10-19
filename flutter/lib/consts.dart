@@ -684,11 +684,3 @@ extension WindowsTargetExt on int {
 
 const kCheckSoftwareUpdateFinish = 'check_software_update_finish';
 const int kAccountApiPort = 21120;
-
-Future<String> get kAccountApiBase async {
-  final host = await bind.mainGetOption(key: 'external-primary-server');
-  if (host.isEmpty) {
-    throw Exception('账号服务地址未配置');
-  }
-  return 'http://$host:$kAccountApiPort';
-}
