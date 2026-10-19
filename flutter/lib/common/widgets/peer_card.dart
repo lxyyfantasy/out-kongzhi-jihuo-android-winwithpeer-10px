@@ -49,22 +49,12 @@ class _PeerCard extends StatefulWidget {
 /// State for the connection page.
 class _PeerCardState extends State<_PeerCard>
     with AutomaticKeepAliveClientMixin {
-		  DeviceLedgerInfo? _ledgerInfo;
-  Timer? _expireTimer;
+  DeviceLedgerInfo? _ledgerInfo;
 
   @override
   void initState() {
     super.initState();
     _loadLedgerInfo();
-    _expireTimer = Timer.periodic(const Duration(minutes: 1), (_) {
-      if (mounted && _ledgerInfo != null) setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    _expireTimer?.cancel();
-    super.dispose();
   }
 
   Future<void> _loadLedgerInfo() async {
