@@ -19,6 +19,8 @@ import '../../models/platform_model.dart';
 import '../../models/ab_model.dart';  // ← 加这行
 import 'home_page.dart';
 import '../../common/widgets/login.dart';
+import '../../common/widgets/register_dialog.dart';
+import '../../common/widgets/change_password_dialog.dart';
 
 /// Connection page for connecting to a remote peer.
 class ConnectionPage extends StatefulWidget implements PageShape {
@@ -91,16 +93,27 @@ class _ConnectionPageState extends State<ConnectionPage> {
               leading: Obx(() {
                 final avatar = bind.mainResolveAvatarUrl(
                     avatar: gFFI.userModel.avatar.value);
-                return buildAvatarWidget(
-                      avatar: avatar,
-                      size: 40,
-                    ) ??
-                    Icon(Icons.person);
+                return buildAvatarWidget(avatar: avatar, size: 40) ?? Icon(Icons.person);
               }),
               title: Obx(() => Text(
                   gFFI.userModel.userName.value.isEmpty
                       ? translate('Login')
                       : '${translate('Logout')} (${gFFI.userModel.accountLabelWithHandle})')),
+              trailing: Obx(() {
+                if (gFFI.userModel.userName.value.isEmpty) {
+                  return TextButton(
+                    onPressed: () async {
+                      await registerDialog();
+                    },
+                    child: Text(translate('注册')),
+                  );
+                }
+                return IconButton(
+                  tooltip: translate('修改密码'),
+                  icon: const Icon(Icons.lock_reset),
+                  onPressed: () => changePasswordDialog(),
+                );
+              }),
               onTap: () {
                 if (gFFI.userModel.userName.value.isEmpty) {
                   loginDialog();

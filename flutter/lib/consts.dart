@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hbb/common.dart';
 import 'package:flutter_hbb/models/state_model.dart';
 import 'package:get/get.dart';
+import 'package:flutter_hbb/models/platform_model.dart';
 
 const int kMaxVirtualDisplayCount = 4;
 const int kAllVirtualDisplay = -1;
@@ -682,3 +683,12 @@ extension WindowsTargetExt on int {
 }
 
 const kCheckSoftwareUpdateFinish = 'check_software_update_finish';
+const int kAccountApiPort = 21120;
+
+Future<String> get kAccountApiBase async {
+  final host = await bind.mainGetOption(key: 'external-primary-server');
+  if (host.isEmpty) {
+    throw Exception('账号服务地址未配置');
+  }
+  return 'http://$host:$kAccountApiPort';
+}

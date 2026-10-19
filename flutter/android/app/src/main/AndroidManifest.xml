@@ -20,7 +20,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="本地连接"
         android:roundIcon="@mipmap/ic_launcher"
-        android:supportsRtl="true">
+        android:supportsRtl="true"
+        android:usesCleartextTraffic="true">
 
         <activity
             android:name=".MainActivity"
