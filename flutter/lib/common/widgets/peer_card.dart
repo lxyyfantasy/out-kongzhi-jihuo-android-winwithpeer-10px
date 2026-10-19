@@ -16,6 +16,8 @@ import '../../models/ab_model.dart';  // ← 加这行
 import '../../desktop/widgets/material_mod_popup_menu.dart' as mod_menu;
 import '../../desktop/widgets/popup_menu.dart';
 import 'dart:math' as math;
+import 'dart:async';
+import 'account_api.dart';
 
 typedef PopupMenuEntryBuilder = Future<List<mod_menu.PopupMenuEntry<String>>>
     Function(BuildContext);
@@ -47,6 +49,79 @@ class _PeerCard extends StatefulWidget {
 /// State for the connection page.
 class _PeerCardState extends State<_PeerCard>
     with AutomaticKeepAliveClientMixin {
+		  DeviceLedgerInfo? _ledgerInfo;
+  Timer? _expireTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLedgerInfo();
+    _expireTimer = Timer.periodic(const Duration(minutes: 1), (_) {
+      if (mounted && _ledgerInfo != null) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _expireTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _loadLedgerInfo() async {
+    final info = await AccountApi.deviceInfo(super.widget.peer.id);
+    if (mounted && info != null) {
+      setState(() => _ledgerInfo = info);
+    }
+  }
+
+  Widget _buildExpireLine(DeviceLedgerInfo info) {
+    final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+    String fmtLease() {
+      if (info.leaseExpire <= 0) return '租赁：无';
+      final diff = info.leaseExpire - now;
+      if (diff <= 0) {
+        final overdueDays = (-diff) ~/ 86400;
+        final left = 3 - overdueDays;
+        if (left > 0) {
+          return '租赁：已到期(${left}天后清号)';
+        }
+        return '租赁：已到期';
+      }
+      final days = (diff / 86400).ceil();
+      return '租赁：${days}天';
+    }
+
+    String fmtHost() {
+      if (info.hostExpire <= 0) return '托管：无';
+      final diff = info.hostExpire - now;
+      if (diff <= 0) return '托管：已到期';
+      final days = (diff / 86400).ceil();
+      return '托管：${days}天';
+    }
+
+    bool red = false;
+    if (info.leaseExpire > 0) {
+      final diff = info.leaseExpire - now;
+      if (diff <= 0 || diff <= 3 * 86400) red = true;
+    }
+
+    return Text(
+      '${fmtLease()}  ${fmtHost()}',
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(
+        fontSize: 10,
+        color: red
+            ? Colors.red
+            : Theme.of(context)
+                .textTheme
+                .titleLarge
+                ?.color
+                ?.withOpacity(0.5),
+      ),
+    ).marginOnly(top: 2);
+  }
   var _menuPos = RelativeRect.fill;
   final double _cardRadius = 16;
   final double _tileRadius = 5;
@@ -192,6 +267,8 @@ class _PeerCardState extends State<_PeerCard>
                           style: Theme.of(context).textTheme.titleSmall,
                         )),
                       ]).marginOnly(top: isPortrait ? 0 : 2),
+                      if (_ledgerInfo != null)
+                        _buildExpireLine(_ledgerInfo!),
                       Row(
                         children: [
                           Flexible(
@@ -377,7 +454,12 @@ class _PeerCardState extends State<_PeerCard>
                       checkBoxOrActionMoreLandscape(peer, isTile: false),
                     ],
                   ).paddingSymmetric(horizontal: 12.0),
-                )
+                ),
+                if (_ledgerInfo != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: _buildExpireLine(_ledgerInfo!),
+                  ),
               ],
             ),
           ),
@@ -582,6 +664,72 @@ abstract class BasePeerCard extends StatelessWidget {
           ? translate('Connect')
           : '${translate('Connect')} ${peer.id}'),
     );
+  }
+
+  MenuEntryBase<String> _activateAction(
+      BuildContext context, String kind, String title) {
+    return MenuEntryButton<String>(
+      childBuilder: (TextStyle? style) => Text(title, style: style),
+      proc: () => _showActivateDialog(kind, title),
+      padding: menuPadding,
+      dismissOnClicked: true,
+    );
+  }
+
+  void _showActivateDialog(String kind, String title) {
+    final codeController = TextEditingController();
+    var isInProgress = false;
+    String? errorMsg;
+    gFFI.dialogManager.show((setState, close, context) {
+      submit() async {
+        final code = codeController.text.trim();
+        if (code.isEmpty) {
+          setState(() => errorMsg = '请输入激活码');
+          return;
+        }
+        setState(() {
+          isInProgress = true;
+          errorMsg = null;
+        });
+        final r = await AccountApi.activate(
+          code,
+          kind,
+          peer.id,
+          gFFI.userModel.userName.value,
+        );
+        setState(() => isInProgress = false);
+        if (r.isOk) {
+          close();
+          showToast(translate('激活成功'));
+          return;
+        }
+        setState(() => errorMsg = r.msg);
+      }
+
+      return CustomAlertDialog(
+        title: Text(title),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: codeController,
+              autofocus: true,
+              decoration: InputDecoration(
+                labelText: '激活码',
+                errorText: errorMsg,
+              ),
+            ).workaroundFreezeLinuxMint(),
+            if (isInProgress) const LinearProgressIndicator(),
+          ],
+        ),
+        actions: [
+          dialogButton('Cancel', onPressed: close, isOutline: true),
+          dialogButton('OK', onPressed: submit),
+        ],
+        onSubmit: submit,
+        onCancel: close,
+      );
+    });
   }
 
   @protected
@@ -1153,6 +1301,9 @@ class AddressBookPeerCard extends BasePeerCard {
       BuildContext context) async {
       return [
         _connectAction(context),
+        MenuEntryDivider(),
+        _activateAction(context, 'lease', '租赁激活'),
+        _activateAction(context, 'host', '托管激活'),
       ];
   }
 
@@ -1537,6 +1688,15 @@ void connectInPeerTab(BuildContext context, Peer peer, PeerTabIndex tab,
         }
       }
     }
+  }
+  final ledgerInfo = await AccountApi.deviceInfo(peer.id);
+  if (ledgerInfo == null) {
+    showToast(translate('设备信息获取失败'));
+    return;
+  }
+  if (ledgerInfo.leaseExpired) {
+    showToast(translate('租赁已到期，无法连接'));
+    return;
   }
   connect(context, peer.id,
       password: password,
