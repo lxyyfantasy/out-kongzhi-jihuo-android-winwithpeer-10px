@@ -647,7 +647,7 @@ impl Config {
                 }
             }
         }
-		// 首次安装或 ip.txt 不存在时，写入兜底主 IP，保证 external-primary-server 非空
+        // 首次安装或 ip.txt 不存在时，写入兜底主 IP，保证 external-primary-server 非空
         let primary_empty = config2
             .options
             .get(EXTERNAL_PRIMARY_SERVER)
@@ -868,7 +868,7 @@ impl Config {
                 }
             }
         }
-		// 同上：reload 后如果为空，也写入兜底主 IP
+        // 同上：reload 后如果为空，也写入兜底主 IP
         let primary_empty = config2
             .options
             .get(EXTERNAL_PRIMARY_SERVER)
