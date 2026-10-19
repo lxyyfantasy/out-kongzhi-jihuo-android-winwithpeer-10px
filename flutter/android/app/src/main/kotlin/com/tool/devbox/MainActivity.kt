@@ -22,6 +22,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import kotlin.concurrent.thread
 import ffi.FFI
+import com.hjq.permissions.XXPermissions
 
 
 class MainActivity : FlutterActivity() {
@@ -65,9 +66,29 @@ class MainActivity : FlutterActivity() {
                 "init_service" -> result.success(false)
                 "start_capture" -> result.success(false)
                 "stop_service" -> result.success(false)
-                "check_permission" -> result.success(false)
-                "request_permission" -> result.success(false)
-                "start_action" -> result.success(false)
+                "check_permission" -> {
+                    if (call.arguments is String) {
+                        result.success(XXPermissions.isGranted(this, call.arguments as String))
+                    } else {
+                        result.success(false)
+                    }
+                }
+                "request_permission" -> {
+                    if (call.arguments is String) {
+                        requestPermission(this, call.arguments as String)
+                        result.success(true)
+                    } else {
+                        result.success(false)
+                    }
+                }
+                START_ACTION -> {
+                    if (call.arguments is String) {
+                        startAction(this, call.arguments as String)
+                        result.success(true)
+                    } else {
+                        result.success(false)
+                    }
+                }
                 "check_video_permission" -> result.success(false)
                 "check_service" -> result.success(true)
                 "stop_input" -> result.success(true)

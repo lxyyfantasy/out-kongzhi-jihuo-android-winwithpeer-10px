@@ -344,22 +344,22 @@ class MainService : Service() {
         if (intent?.action == ACT_INIT_MEDIA_PROJECTION_AND_SERVICE) {
             createForegroundNotification()
     
-            // ========== 新增：开机时检查并请求文件存储权限 ==========
-            val STORAGE_PERMISSION = "android.permission.MANAGE_EXTERNAL_STORAGE"
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                if (!XXPermissions.isGranted(this, STORAGE_PERMISSION)) {
-                    val permIntent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-                    permIntent.data = Uri.parse("package:$packageName")
-                    permIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(permIntent)
-                }
-            } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
-                if (!XXPermissions.isGranted(this, STORAGE_PERMISSION)) {
-                    val permIntent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
-                    permIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(permIntent)
-                }
-            }
+            // ========== 存储权限检查（对齐被控端，注释掉） ==========
+            // val STORAGE_PERMISSION = "android.permission.MANAGE_EXTERNAL_STORAGE"
+            // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            //     if (!XXPermissions.isGranted(this, STORAGE_PERMISSION)) {
+            //         val permIntent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+            //         permIntent.data = Uri.parse("package:$packageName")
+            //         permIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            //         startActivity(permIntent)
+            //     }
+            // } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+            //     if (!XXPermissions.isGranted(this, STORAGE_PERMISSION)) {
+            //         val permIntent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
+            //         permIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            //         startActivity(permIntent)
+            //     }
+            // }
             // ========================================================
     
             if (intent.getBooleanExtra(EXT_INIT_FROM_BOOT, false)) {

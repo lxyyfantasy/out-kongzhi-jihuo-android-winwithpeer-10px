@@ -69,7 +69,6 @@ fun isSupportVoiceCall(): Boolean {
 }
 
 fun requestPermission(context: Context, type: String) {
-    return
     XXPermissions.with(context)
         .permission(type)
         .request { _, all ->
@@ -85,7 +84,6 @@ fun requestPermission(context: Context, type: String) {
 }
 
 fun startAction(context: Context, action: String) {
-    return
     try {
         context.startActivity(Intent(action).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
