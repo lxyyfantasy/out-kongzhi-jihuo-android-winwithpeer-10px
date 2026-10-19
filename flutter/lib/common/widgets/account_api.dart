@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_hbb/consts.dart';
+import 'package:flutter_hbb/models/platform_model.dart';
 import 'package:flutter_hbb/utils/http_service.dart' as http;
 
 class AccountApiResult {
@@ -22,9 +23,20 @@ class AccountApiResult {
 class AccountApi {
   static const _timeout = Duration(seconds: 10);
 
+  static Future<String> _base() async {
+    String host = '';
+    try {
+      host = await bind.mainGetOption(key: 'external-primary-server');
+    } catch (_) {}
+    if (host.isEmpty) {
+      throw Exception('账号服务地址未配置');
+    }
+    return 'http://$host:$kAccountApiPort';
+  }
+
   static Future<AccountApiResult> register(
       String username, String password) async {
-    final base = await kAccountApiBase;
+    final base = await _base();
     final resp = await http
         .post(
           Uri.parse('$base/register'),
@@ -37,7 +49,7 @@ class AccountApi {
 
   static Future<AccountApiResult> changePassword(
       String username, String oldPassword, String newPassword) async {
-    final base = await kAccountApiBase;
+    final base = await _base();
     final resp = await http
         .post(
           Uri.parse('$base/change-password'),
