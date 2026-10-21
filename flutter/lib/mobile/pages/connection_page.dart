@@ -88,20 +88,29 @@ class _ConnectionPageState extends State<ConnectionPage> {
       children: [
         if (!bind.isDisableAccount())
           Padding(
-            padding: const EdgeInsets.only(top: 60),
+            padding: const EdgeInsets.only(top: 32),
             child: ListTile(
-              leading: Obx(() {
-                final avatar = bind.mainResolveAvatarUrl(
-                    avatar: gFFI.userModel.avatar.value);
-                return buildAvatarWidget(avatar: avatar, size: 40) ?? Icon(Icons.person);
-              }),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              leading: null,
               title: Obx(() => Text(
                   gFFI.userModel.userName.value.isEmpty
                       ? translate('Login')
-                      : '${translate('Logout')} (${gFFI.userModel.accountLabelWithHandle})')),
+                      : '${translate('Logout')} (${gFFI.userModel.accountLabelWithHandle})',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600))),
               trailing: Obx(() {
                 if (gFFI.userModel.userName.value.isEmpty) {
-                  return TextButton(
+                  return ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF2E7D32),
+                      foregroundColor: Colors.white,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 6),
+                      minimumSize: const Size(0, 32),
+                      textStyle: const TextStyle(fontSize: 13),
+                    ),
                     onPressed: () async {
                       await registerDialog();
                     },
@@ -110,7 +119,8 @@ class _ConnectionPageState extends State<ConnectionPage> {
                 }
                 return IconButton(
                   tooltip: translate('修改密码'),
-                  icon: const Icon(Icons.lock_reset),
+                  icon: const Icon(Icons.lock_reset,
+                      color: Color(0xFF2E7D32)),
                   onPressed: () => changePasswordDialog(),
                 );
               }),
@@ -128,13 +138,10 @@ class _ConnectionPageState extends State<ConnectionPage> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Text(
               '单设备ID未开通或开通到期后3天内不激活将从账号下清除，账号名下连续3天内没有设备开通将清除账号；限期刷新延迟，请关闭软件结束进程后重启。',
-              style: TextStyle(
-                fontSize: 10,
-                color: Theme.of(context)
-                    .textTheme
-                    .titleLarge
-                    ?.color
-                    ?.withOpacity(0.5),
+              style: const TextStyle(
+                fontSize: 11,
+                height: 1.4,
+                color: Colors.black54,
               ),
             ),
           ),

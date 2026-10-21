@@ -94,29 +94,6 @@ class _PeerTabPageState extends State<PeerTabPage>
       textBaseline: TextBaseline.ideographic,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Obx(() => SizedBox(
-              height: 32,
-              child: Container(
-                padding: stateGlobal.isPortrait.isTrue
-                    ? EdgeInsets.symmetric(horizontal: 2)
-                    : null,
-                child: selectionWrap(Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // 外层Offstage隐藏顶部四个切换标签图标栏
-                    Expanded(
-                        child: Offstage(
-                          offstage: true,
-                          child: visibleContextMenuListener(_createSwitchBar(context)),
-                        )),
-                    if (stateGlobal.isPortrait.isTrue)
-                      ..._portraitRightActions(context)
-                    else
-                      ..._landscapeRightActions(context)
-                  ],
-                )),
-              ),
-            ).paddingOnly(right: stateGlobal.isPortrait.isTrue ? 0 : 12)),
         _createPeersView(),
       ],
     );

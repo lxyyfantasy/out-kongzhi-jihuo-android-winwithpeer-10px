@@ -76,7 +76,7 @@ class _AddressBookState extends State<AddressBook> {
     return Row(
       children: [
         Offstage(
-            offstage: hideAbTagsPanel.value,
+            offstage: true,
             child: Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
@@ -103,7 +103,7 @@ class _AddressBookState extends State<AddressBook> {
     return Column(
       children: [
         Offstage(
-            offstage: hideAbTagsPanel.value,
+            offstage: true,
             child: Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(6),
@@ -168,6 +168,12 @@ class _AddressBookState extends State<AddressBook> {
   }
 
   Widget _buildAbDropdown() {
+    // 只有一个地址簿，不需要切换下拉，整栏不显示。
+    // 如需恢复下拉，把下面这行的 false 改为 true 即可。
+    const bool showAbDropdown = false;
+    if (!showAbDropdown) {
+      return const SizedBox.shrink();
+    }
     if (gFFI.abModel.legacyMode.value) {
       return Offstage();
     }

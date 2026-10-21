@@ -2915,14 +2915,44 @@ Widget dialogButton(String text,
     Widget? icon,
     TextStyle? style,
     ButtonStyle? buttonStyle}) {
+  const green = Color(0xFF2E7D32);
+  // 统一直角小按钮样式，取消用描边，确认用深绿实心
+  final outlineStyle = ButtonStyle(
+    backgroundColor: const MaterialStatePropertyAll(Colors.transparent),
+    foregroundColor: const MaterialStatePropertyAll(green),
+    side: const MaterialStatePropertyAll(BorderSide(color: green, width: 1)),
+    elevation: const MaterialStatePropertyAll(0),
+    shape: const MaterialStatePropertyAll(RoundedRectangleBorder(
+      borderRadius: BorderRadius.zero,
+    )),
+    padding: const MaterialStatePropertyAll(
+        EdgeInsets.symmetric(horizontal: 16, vertical: 6)),
+    minimumSize: const MaterialStatePropertyAll(Size(0, 32)),
+    textStyle: const MaterialStatePropertyAll(TextStyle(fontSize: 13)),
+  );
+  final solidStyle = ButtonStyle(
+    backgroundColor: const MaterialStatePropertyAll(green),
+    foregroundColor: const MaterialStatePropertyAll(Colors.white),
+    elevation: const MaterialStatePropertyAll(0),
+    shape: const MaterialStatePropertyAll(RoundedRectangleBorder(
+      borderRadius: BorderRadius.zero,
+    )),
+    padding: const MaterialStatePropertyAll(
+        EdgeInsets.symmetric(horizontal: 16, vertical: 6)),
+    minimumSize: const MaterialStatePropertyAll(Size(0, 32)),
+    textStyle: const MaterialStatePropertyAll(TextStyle(fontSize: 13)),
+  );
+
   if (isDesktop || isWebDesktop) {
     if (isOutline) {
       return icon == null
           ? OutlinedButton(
+              style: outlineStyle,
               onPressed: onPressed,
               child: Text(translate(text), style: style),
             )
           : OutlinedButton.icon(
+              style: outlineStyle,
               icon: icon,
               onPressed: onPressed,
               label: Text(translate(text), style: style),
@@ -2930,19 +2960,26 @@ Widget dialogButton(String text,
     } else {
       return icon == null
           ? ElevatedButton(
-              style: ElevatedButton.styleFrom(elevation: 0).merge(buttonStyle),
+              style: solidStyle.merge(buttonStyle),
               onPressed: onPressed,
               child: Text(translate(text), style: style),
             )
           : ElevatedButton.icon(
+              style: solidStyle.merge(buttonStyle),
               icon: icon,
-              style: ElevatedButton.styleFrom(elevation: 0).merge(buttonStyle),
               onPressed: onPressed,
               label: Text(translate(text), style: style),
             );
     }
   } else {
     return TextButton(
+      style: TextButton.styleFrom(
+        foregroundColor: green,
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        minimumSize: const Size(0, 32),
+        textStyle: const TextStyle(fontSize: 13),
+      ),
       onPressed: onPressed,
       child: Text(
         translate(text),

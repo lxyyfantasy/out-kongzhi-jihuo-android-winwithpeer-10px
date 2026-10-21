@@ -101,20 +101,15 @@ class _PeerCardState extends State<_PeerCard>
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
-        fontSize: 10,
-        color: red
-            ? Colors.red
-            : Theme.of(context)
-                .textTheme
-                .titleLarge
-                ?.color
-                ?.withOpacity(0.5),
+        fontSize: 11,
+        height: 1.3,
+        color: red ? Colors.red : Colors.black54,
       ),
-    ).marginOnly(top: 2);
+    );
   }
   var _menuPos = RelativeRect.fill;
-  final double _cardRadius = 16;
-  final double _tileRadius = 5;
+  final double _cardRadius = 13;
+  final double _tileRadius = 8;
   final double _borderWidth = 2;
 
   @override
@@ -209,56 +204,52 @@ class _PeerCardState extends State<_PeerCard>
     return Row(
       mainAxisSize: MainAxisSize.max,
       children: [
+        // 小头像即状态，在线绿/离线红，不显示密码 key
         Container(
-            decoration: BoxDecoration(
-              color: str2color('${peer.id}${peer.platform}', 0x7f),
-              borderRadius: isPortrait
-                  ? BorderRadius.circular(_tileRadius)
-                  : BorderRadius.only(
-                      topLeft: Radius.circular(_tileRadius),
-                      bottomLeft: Radius.circular(_tileRadius),
-                    ),
-            ),
-            alignment: Alignment.center,
-            width: isPortrait ? 50 : 42,
-            height: isPortrait ? 50 : null,
-            child: Stack(
-              children: [
-                getPlatformImage(peer.platform, size: isPortrait ? 38 : 30)
-                    .paddingAll(6),
-                if (_shouldBuildPasswordIcon(peer))
-                  Positioned(
-                    top: 1,
-                    left: 1,
-                    child: Icon(Icons.key, size: 6, color: Colors.white),
-                  ),
-              ],
-            )),
+          width: 20,
+          height: 20,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: peer.online ? Colors.green : kColorWarn,
+          ),
+          padding: const EdgeInsets.all(2),
+          child: ClipOval(
+            child: getPlatformImage(peer.platform, size: 16),
+          ),
+        ),
+        const SizedBox(width: 8),
         Expanded(
           child: Container(
+            constraints: const BoxConstraints(minHeight: 60),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.background,
-              borderRadius: BorderRadius.only(
-                topRight: Radius.circular(_tileRadius),
-                bottomRight: Radius.circular(_tileRadius),
-              ),
+              borderRadius: BorderRadius.circular(_tileRadius),
             ),
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
             child: Row(
               children: [
                 Expanded(
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(children: [
-                        getOnline(isPortrait ? 4 : 8, peer.online),
                         Expanded(
                             child: Text(
                           peer.alias.isEmpty ? formatID(peer.id) : peer.alias,
                           overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.titleSmall,
+                          style: TextStyle(
+                            fontSize: isPortrait ? 15 : 14,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).textTheme.titleSmall?.color,
+                          ),
                         )),
-                      ]).marginOnly(top: isPortrait ? 0 : 2),
+                      ]),
                       if (_ledgerInfo != null)
-                        _buildExpireLine(_ledgerInfo!),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 3),
+                          child: _buildExpireLine(_ledgerInfo!),
+                        ),
                       Row(
                         children: [
                           Flexible(
@@ -305,7 +296,7 @@ class _PeerCardState extends State<_PeerCard>
                     ? checkBoxOrActionMorePortrait(peer)
                     : checkBoxOrActionMoreLandscape(peer, isTile: true),
               ],
-            ).paddingOnly(left: 10.0, top: 3.0),
+            ),
           ),
         )
       ],
@@ -428,26 +419,33 @@ class _PeerCardState extends State<_PeerCard>
                 ),
                 Container(
                   color: Theme.of(context).colorScheme.background,
+                  constraints: const BoxConstraints(minHeight: 52),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
                           child: Row(children: [
-                        getOnline(8, peer.online),
                         Expanded(
                             child: Text(
                           peer.alias.isEmpty ? formatID(peer.id) : peer.alias,
                           overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.titleSmall,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).textTheme.titleSmall?.color,
+                          ),
                         )),
-                      ]).paddingSymmetric(vertical: 8)),
+                      ]).paddingSymmetric(vertical: 10)),
                       checkBoxOrActionMoreLandscape(peer, isTile: false),
                     ],
-                  ).paddingSymmetric(horizontal: 12.0),
+                  ).paddingSymmetric(horizontal: 14.0),
                 ),
                 if (_ledgerInfo != null)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  Container(
+                    color: Theme.of(context).colorScheme.background,
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12.0, vertical: 2.0),
                     child: _buildExpireLine(_ledgerInfo!),
                   ),
               ],
@@ -1576,28 +1574,24 @@ Widget getOnline(double rightPadding, bool online) {
 
 Widget build_more(BuildContext context, {bool invert = false}) {
   final RxBool hover = false.obs;
+  final baseColor =
+      Theme.of(context).textTheme.titleLarge?.color ?? Colors.black;
   return InkWell(
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(6),
       onTap: () {},
       onHover: (value) => hover.value = value,
-      child: Obx(() => CircleAvatar(
-          radius: 14,
-          backgroundColor: hover.value
-              ? (invert
-                  ? Theme.of(context).colorScheme.background
-                  : Theme.of(context).scaffoldBackgroundColor)
-              : (invert
-                  ? Theme.of(context).scaffoldBackgroundColor
-                  : Theme.of(context).colorScheme.background),
-          child: Icon(Icons.more_vert,
-              size: 18,
-              color: hover.value
-                  ? Theme.of(context).textTheme.titleLarge?.color
-                  : Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.color
-                      ?.withOpacity(0.5)))));
+      child: Obx(() => Container(
+          width: 28,
+          height: 28,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(6),
+            color: hover.value
+                ? baseColor.withOpacity(0.08)
+                : Colors.transparent,
+          ),
+          child: Icon(Icons.more_horiz,
+              size: 20,
+              color: hover.value ? baseColor : baseColor.withOpacity(0.45)))));
 }
 
 class TagPainter extends CustomPainter {
