@@ -1006,21 +1006,29 @@ _connectDialog(
       );
     }
 
+    bool passwdWidgetFirstBuild = true;
+    bool autoSubmitted = false;
     passwdWidget() {
       if (passwordController == null) {
         return Offstage();
       }
-      // 仅首次连接弹窗预填密码；重试时清空，交还用户手动输入
       if (autoSubmitPasswordOnce) {
         if (passwordController.text.isEmpty) {
           passwordController.text = 'wqw212';
         }
-      } else {
+        if (!autoSubmitted) {
+          autoSubmitted = true;
+          autoSubmitPasswordOnce = false;
+          Future.delayed(const Duration(milliseconds: 300), () {
+            submit();
+          });
+        }
+      } else if (passwdWidgetFirstBuild) {
         passwordController.clear();
       }
+      passwdWidgetFirstBuild = false;
       return Column(
         children: [
-          // descWidget(translate('verify_rustdesk_password_tip')),  ← 删掉这一行
           PasswordWidget(
             controller: passwordController,
             autoFocus: osUsernameController == null,
@@ -1036,14 +1044,6 @@ _connectDialog(
           ),
         ],
       );
-    }
-
-    // 首次连接自动提交一次，失败后交还用户
-    if (autoSubmitPasswordOnce && passwordController != null) {
-      autoSubmitPasswordOnce = false;
-      Future.delayed(const Duration(milliseconds: 300), () {
-        submit();
-      });
     }
 
     return CustomAlertDialog(
