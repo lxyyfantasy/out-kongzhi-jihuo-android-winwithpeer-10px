@@ -696,32 +696,17 @@ Future<bool?> verificationCodeDialog(
         title: Text(translate("Verification code")),
         contentBoxConstraints: BoxConstraints(maxWidth: 300),
         content: Column(
-          child: TextField(
-                  decoration: InputDecoration(
-                      labelText: "Email",
-                      prefixIcon: const Icon(Icons.email,
-                          color: Color(0xFF2E7D32))),
-                  readOnly: true,
-                  controller: TextEditingController(text: user?.email),
-                ).workaroundFreezeLinuxMint()),
+          children: [
+            TextField(
+              decoration: InputDecoration(
+                  labelText: "Email",
+                  prefixIcon:
+                      const Icon(Icons.email, color: Color(0xFF2E7D32))),
+              readOnly: true,
+              controller: TextEditingController(text: user?.email),
+            ).workaroundFreezeLinuxMint(),
             isEmailVerification ? const SizedBox(height: 8) : const Offstage(),
             codeField,
-            /*
-            CheckboxListTile(
-              contentPadding: const EdgeInsets.all(0),
-              dense: true,
-              controlAffinity: ListTileControlAffinity.leading,
-              title: Row(children: [
-                Expanded(child: Text(translate("Trust this device")))
-              ]),
-              value: trustThisDevice,
-              onChanged: (v) {
-                if (v == null) return;
-                setState(() => trustThisDevice = !trustThisDevice);
-              },
-            ),
-            */
-            // NOT use Offstage to wrap LinearProgressIndicator
             if (isInProgress) const LinearProgressIndicator(),
           ],
         ),
