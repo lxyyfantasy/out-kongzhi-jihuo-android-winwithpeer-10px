@@ -917,7 +917,10 @@ class OverlayDialogManager {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 30),
-                  const Center(child: CircularProgressIndicator()),
+                  const Center(
+                      child: CircularProgressIndicator(
+                    color: Color(0xFF2E7D32),
+                  )),
                   const SizedBox(height: 20),
                   Center(
                       child: Text(translate(text),
