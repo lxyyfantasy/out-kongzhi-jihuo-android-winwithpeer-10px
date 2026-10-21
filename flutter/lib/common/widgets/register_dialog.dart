@@ -126,7 +126,19 @@ Future<bool?> registerDialog() async {
             height: 38,
             width: 200,
             child: ElevatedButton(
-              child: Text(translate('注册'), style: TextStyle(fontSize: 16)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2E7D32),
+                foregroundColor: Colors.white,
+                disabledBackgroundColor: const Color(0xFF9E9E9E),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.zero,
+                ),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16, vertical: 6),
+                textStyle: const TextStyle(fontSize: 13),
+              ),
+              child: Text(translate('注册'),
+                  style: const TextStyle(fontSize: 16)),
               onPressed: isInProgress ? null : onSubmit,
             ),
           ),

@@ -504,17 +504,17 @@ class _PeerCardState extends State<_PeerCard>
             : Icon(Icons.check_box_outline_blank),
       );
     } else {
-      return InkWell(
-          child: const Padding(
-              padding: EdgeInsets.all(12), child: Icon(Icons.more_vert)),
-          onTapDown: (e) {
-            final x = e.globalPosition.dx;
-            final y = e.globalPosition.dy;
+      return Listener(
+          onPointerDown: (e) {
+            final x = e.position.dx;
+            final y = e.position.dy;
             _menuPos = RelativeRect.fromLTRB(x, y, x, y);
           },
-          onTap: () {
-            _showPeerMenu(peer.id);
-          });
+          onPointerUp: (_) => _showPeerMenu(peer.id),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: build_more(context),
+          ));
     }
   }
 
@@ -713,6 +713,14 @@ abstract class BasePeerCard extends StatelessWidget {
               decoration: InputDecoration(
                 labelText: '激活码',
                 errorText: errorMsg,
+                labelStyle: const TextStyle(color: Colors.black54),
+                floatingLabelStyle: const TextStyle(color: Color(0xFF2E7D32)),
+                enabledBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black38),
+                ),
+                focusedBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF2E7D32), width: 1.5),
+                ),
               ),
             ).workaroundFreezeLinuxMint(),
             if (isInProgress) const LinearProgressIndicator(),

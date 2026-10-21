@@ -42,7 +42,16 @@ class _AddressBookState extends State<AddressBook> {
         if (!gFFI.userModel.isLogin) {
           return Center(
               child: ElevatedButton(
-                  onPressed: loginDialog, child: Text(translate("Login"))));
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2E7D32),
+                  foregroundColor: Colors.white,
+                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  minimumSize: const Size(0, 32),
+                  textStyle: const TextStyle(fontSize: 13),
+                ),
+                onPressed: loginDialog,
+                child: Text(translate("Login"))));
         } else if (gFFI.userModel.networkError.isNotEmpty) {
           return netWorkErrorWidget();
         } else {
