@@ -68,18 +68,18 @@ class _PeerCardState extends State<_PeerCard>
     final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
     String fmtLease() {
-      if (info.leaseExpire <= 0) return '租赁：无';
+      if (info.leaseExpire <= 0) return '开通：无';
       final diff = info.leaseExpire - now;
       if (diff <= 0) {
         final overdueDays = (-diff) ~/ 86400;
         final left = 3 - overdueDays;
         if (left > 0) {
-          return '租赁：已到期(${left}天后清号)';
+          return '开通：已到期(${left}天后清ID)';
         }
-        return '租赁：已到期';
+        return '开通：已到期';
       }
       final days = (diff / 86400).ceil();
-      return '租赁：${days}天';
+      return '开通：${days}天';
     }
 
     String fmtHost() {
@@ -666,7 +666,15 @@ abstract class BasePeerCard extends StatelessWidget {
     );
   }
 
-  void _showActivateDialog(String kind, String title) {
+  void _showActivateDialog(String kind, String title) async {
+    if (kind == 'host') {
+      final info = await AccountApi.deviceInfo(peer.id);
+      final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+      if (info == null || info.leaseExpire <= 0 || info.leaseExpire < now) {
+        showToast('请先开通设备');
+        return;
+      }
+    }
     final codeController = TextEditingController();
     var isInProgress = false;
     String? errorMsg;
@@ -1292,7 +1300,7 @@ class AddressBookPeerCard extends BasePeerCard {
       return [
         _connectAction(context),
         MenuEntryDivider(),
-        _activateAction(context, 'lease', '租赁激活'),
+        _activateAction(context, 'lease', '开通激活'),
         _activateAction(context, 'host', '托管激活'),
       ];
   }

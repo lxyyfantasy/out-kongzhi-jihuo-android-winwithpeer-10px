@@ -123,6 +123,21 @@ class _ConnectionPageState extends State<ConnectionPage> {
               },
             ),
           ),
+        if (gFFI.userModel.userName.value.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: Text(
+              '单设备ID未开通或开通到期后3天内不激活将从账号下清除，账号名下连续3天内没有设备开通将清除账号；限期刷新延迟，请关闭软件结束进程后重启。',
+              style: TextStyle(
+                fontSize: 10,
+                color: Theme.of(context)
+                    .textTheme
+                    .titleLarge
+                    ?.color
+                    ?.withOpacity(0.5),
+              ),
+            ),
+          ),
         Expanded(child: PeerTabPage()),
       ],
     );
