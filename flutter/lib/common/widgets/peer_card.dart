@@ -64,40 +64,53 @@ class _PeerCardState extends State<_PeerCard>
     }
   }
 
-  Widget _buildExpireLine(DeviceLedgerInfo info) {
+  Widget _buildExpireLine(DeviceLedgerInfo? info) {
     final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-
-    String fmtLease() {
-      if (info.leaseExpire <= 0) return '开通：无';
+  
+    // info == null：没通信/没返回，两个都空
+    if (info == null) {
+      return Text(
+        '开通：  托管：',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(
+          fontSize: 11,
+          height: 1.3,
+          color: Colors.black54,
+        ),
+      );
+    }
+  
+    bool red = false;
+  
+    // 开通
+    String leaseValue;
+    if (info.leaseExpire <= 0) {
+      leaseValue = '未激活';
+    } else {
       final diff = info.leaseExpire - now;
       if (diff <= 0) {
         final overdueDays = (-diff) ~/ 86400;
         final left = 3 - overdueDays;
-        if (left > 0) {
-          return '开通：已到期(${left}天后清ID)';
-        }
-        return '开通：已到期';
+        leaseValue = left > 0 ? '已到期(${left}天后清ID)' : '已到期';
+        red = true;
+      } else {
+        leaseValue = '${(diff / 86400).ceil()}天';
+        if (diff <= 3 * 86400) red = true;
       }
-      final days = (diff / 86400).ceil();
-      return '开通：${days}天';
     }
-
-    String fmtHost() {
-      if (info.hostExpire <= 0) return '托管：无';
+  
+    // 托管
+    String hostValue;
+    if (info.hostExpire <= 0) {
+      hostValue = '未激活';
+    } else {
       final diff = info.hostExpire - now;
-      if (diff <= 0) return '托管：已到期';
-      final days = (diff / 86400).ceil();
-      return '托管：${days}天';
+      hostValue = diff <= 0 ? '已到期' : '${(diff / 86400).ceil()}天';
     }
-
-    bool red = false;
-    if (info.leaseExpire > 0) {
-      final diff = info.leaseExpire - now;
-      if (diff <= 0 || diff <= 3 * 86400) red = true;
-    }
-
+  
     return Text(
-      '${fmtLease()}  ${fmtHost()}',
+      '开通：$leaseValue  托管：$hostValue',
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
@@ -236,7 +249,7 @@ class _PeerCardState extends State<_PeerCard>
                       Row(children: [
                         Expanded(
                             child: Text(
-                          peer.alias.isEmpty ? formatID(peer.id) : peer.alias,
+                          peer.alias.isEmpty ? peer.id : peer.alias,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: isPortrait ? 15 : 14,
@@ -245,11 +258,10 @@ class _PeerCardState extends State<_PeerCard>
                           ),
                         )),
                       ]),
-                      if (_ledgerInfo != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 3),
-                          child: _buildExpireLine(_ledgerInfo!),
-                        ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 3),
+                        child: _buildExpireLine(_ledgerInfo),
+                      ),
                       Row(
                         children: [
                           Flexible(
@@ -427,7 +439,7 @@ class _PeerCardState extends State<_PeerCard>
                           child: Row(children: [
                         Expanded(
                             child: Text(
-                          peer.alias.isEmpty ? formatID(peer.id) : peer.alias,
+                          peer.alias.isEmpty ? peer.id : peer.alias,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 14,
@@ -446,7 +458,7 @@ class _PeerCardState extends State<_PeerCard>
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12.0, vertical: 2.0),
-                    child: _buildExpireLine(_ledgerInfo!),
+                    child: _buildExpireLine(_ledgerInfo),
                   ),
               ],
             ),
@@ -983,7 +995,7 @@ abstract class BasePeerCard extends StatelessWidget {
         }
 
         deleteConfirmDialog(onSubmit,
-            '${translate('Delete')} "${peer.alias.isEmpty ? formatID(peer.id) : peer.alias}"?');
+            '${translate('Delete')} "${peer.alias.isEmpty ? peer.id : peer.alias}"?');
       },
       padding: menuPadding,
       dismissOnClicked: true,
@@ -1551,7 +1563,8 @@ void _rdpDialog(String id) async {
                                         secure.value = !secure.value,
                                     icon: Icon(secure.value
                                         ? Icons.visibility_off
-                                        : Icons.visibility))),
+                                        : Icons.visibility,
+                                        color: const Color(0xFF2E7D32)))),
                             controller: passwordController,
                           ).workaroundFreezeLinuxMint()),
                     ),

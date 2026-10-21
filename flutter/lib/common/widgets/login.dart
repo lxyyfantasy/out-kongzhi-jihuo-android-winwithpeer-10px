@@ -576,7 +576,7 @@ Future<bool?> loginDialog() async {
           child: InkWell(
             child: Icon(
               Icons.close,
-              size: 25,
+              size: 22,
               // No need to handle the branch of null.
               // Because we can ensure the color is not null when debug.
               color: isCloseHovered
@@ -696,12 +696,11 @@ Future<bool?> verificationCodeDialog(
         title: Text(translate("Verification code")),
         contentBoxConstraints: BoxConstraints(maxWidth: 300),
         content: Column(
-          children: [
-            Offstage(
-                offstage: !isEmailVerification || user?.email == null,
-                child: TextField(
+          child: TextField(
                   decoration: InputDecoration(
-                      labelText: "Email", prefixIcon: Icon(Icons.email)),
+                      labelText: "Email",
+                      prefixIcon: const Icon(Icons.email,
+                          color: Color(0xFF2E7D32))),
                   readOnly: true,
                   controller: TextEditingController(text: user?.email),
                 ).workaroundFreezeLinuxMint()),
@@ -750,7 +749,8 @@ void logOutConfirmDialog() {
     }
 
     return CustomAlertDialog(
-      content: Text(translate("logout_tip")),
+      content: const Text('是否登出?',
+          style: TextStyle(fontSize: 16, color: Colors.black87)),
       actions: [
         dialogButton(translate("Cancel"), onPressed: close, isOutline: true),
         dialogButton(translate("OK"), onPressed: submit),

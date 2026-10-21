@@ -122,7 +122,7 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
       }
       _disableAndroidSoftKeyboard(
           isKeyboardVisible: keyboardVisibilityController.isVisible);
-      gFFI.dialogManager.toggleMobileActionsOverlay(ffi: gFFI);   // 新加这行
+      gFFI.dialogManager.showMobileActionsOverlay(ffi: gFFI);
     });
     WidgetsBinding.instance.addObserver(this);
   }
@@ -397,9 +397,10 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
                     (keyboardIsVisible || _showGestureHelp)
                         ? Icons.expand_more
                         : Icons.expand_less,
-                    color: Colors.white,
+                    color: Colors.black87,
                   ),
-                  backgroundColor: MyTheme.accent,
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
                   onPressed: () {
                     setState(() {
                       if (keyboardIsVisible) {
@@ -485,80 +486,35 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
   }
 
   Widget getBottomAppBar() {
-    final ffiModel = Provider.of<FfiModel>(context);
     return BottomAppBar(
       elevation: 10,
-      color: MyTheme.accent,
+      color: Colors.white,
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Row(
-              children: <Widget>[
-                    IconButton(
-                      color: Colors.white,
-                      icon: Icon(Icons.clear),
-                      onPressed: () {
-                        clientClose(sessionId, gFFI);
-                      },
-                    ),
-                    IconButton(
-                      color: Colors.white,
-                      icon: Icon(Icons.tv),
-                      onPressed: () {
-                        setState(() => _showEdit = false);
-                        showOptions(context, widget.id, gFFI.dialogManager);
-                      },
-                    )
-                  ] +
-                  (isWebDesktop || ffiModel.viewOnly || !ffiModel.keyboard
-                      ? []
-                      : gFFI.ffiModel.isPeerAndroid
-                          ? [
-                              IconButton(
-                                  color: Colors.white,
-                                  icon: Icon(Icons.keyboard),
-                                  onPressed: openKeyboard),
-                              IconButton(
-                                color: Colors.white,
-                                icon: const Icon(Icons.build),
-                                onPressed: () => gFFI.dialogManager
-                                    .toggleMobileActionsOverlay(ffi: gFFI),
-                              )
-                            ]
-                          : [
-                              IconButton(
-                                  color: Colors.white,
-                                  icon: Icon(Icons.keyboard),
-                                  onPressed: openKeyboard),
-                              IconButton(
-                                color: Colors.white,
-                                icon: Icon(gFFI.ffiModel.touchMode
-                                    ? Icons.touch_app
-                                    : Icons.mouse),
-                                onPressed: () => setState(
-                                    () => _showGestureHelp = !_showGestureHelp),
-                              ),
-                            ]) +
-                  [
-                    IconButton(
-                      color: Colors.white,
-                      icon: Icon(Icons.more_vert),
-                      onPressed: () {
-                        setState(() => _showEdit = false);
-                        showActions(widget.id);
-                      },
-                    ),
-                  ]),
-          Obx(() => IconButton(
-                color: Colors.white,
-                icon: Icon(Icons.expand_more),
-                onPressed: gFFI.ffiModel.waitForFirstImage.isTrue
-                    ? null
-                    : () {
-                        setState(() => _showBar = !_showBar);
-                      },
-              )),
+            children: <Widget>[
+              TextButton(
+                onPressed: () => clientClose(sessionId, gFFI),
+                child: const Text('退出',
+                    style: TextStyle(color: Colors.black87, fontSize: 13)),
+              ),
+              TextButton(
+                onPressed: () => gFFI.dialogManager
+                    .toggleMobileActionsOverlay(ffi: gFFI),
+                child: const Text('虚拟按键',
+                    style: TextStyle(color: Colors.black87, fontSize: 13)),
+              ),
+            ],
+          ),
+          TextButton(
+            onPressed: gFFI.ffiModel.waitForFirstImage.isTrue
+                ? null
+                : () => setState(() => _showBar = !_showBar),
+            child: const Text('隐藏工具栏',
+                style: TextStyle(color: Colors.black87, fontSize: 13)),
+          ),
         ],
       ),
     );

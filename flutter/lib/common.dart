@@ -392,20 +392,20 @@ class MyTheme {
       ),
     ),
     scrollbarTheme: scrollbarTheme,
-    inputDecorationTheme: InputDecorationTheme(
-      fillColor: grayBg,
-      filled: true,
+    inputDecorationTheme: const InputDecorationTheme(
+      filled: false,
       isDense: true,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: Color(0xFFBDBDBD)),
+      border: UnderlineInputBorder(
+        borderSide: BorderSide(color: Colors.black38),
       ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: Color(0xFF2E7D32), width: 1.5),
+      enabledBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: Colors.black38),
       ),
-      labelStyle: const TextStyle(color: Colors.black54),
-      floatingLabelStyle: const TextStyle(color: Color(0xFF2E7D32)),
+      focusedBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: Color(0xFF2E7D32), width: 1.5),
+      ),
+      labelStyle: TextStyle(color: Colors.black54),
+      floatingLabelStyle: TextStyle(color: Color(0xFF2E7D32)),
     ),
     textTheme: const TextTheme(
         titleLarge: TextStyle(fontSize: 19, color: Colors.black87),
@@ -495,16 +495,21 @@ class MyTheme {
       ),
     ),
     scrollbarTheme: scrollbarThemeDark,
-    inputDecorationTheme: (isDesktop || isWebDesktop)
-        ? InputDecorationTheme(
-            fillColor: Color(0xFF24252B),
-            filled: true,
-            isDense: true,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          )
-        : null,
+    inputDecorationTheme: const InputDecorationTheme(
+      filled: false,
+      isDense: true,
+      border: UnderlineInputBorder(
+        borderSide: BorderSide(color: Colors.white38),
+      ),
+      enabledBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: Colors.white38),
+      ),
+      focusedBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: Color(0xFF2E7D32), width: 1.5),
+      ),
+      labelStyle: TextStyle(color: Colors.white70),
+      floatingLabelStyle: TextStyle(color: Color(0xFF2E7D32)),
+    ),
     textTheme: const TextTheme(
       titleLarge: TextStyle(fontSize: 19),
       titleSmall: TextStyle(fontSize: 14),
@@ -1112,6 +1117,10 @@ class CustomAlertDialog extends StatelessWidget {
       },
       child: AlertDialog(
           scrollable: true,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.zero,
+          ),
+          backgroundColor: Theme.of(context).dialogBackgroundColor,
           title: title,
           content: ConstrainedBox(
             constraints: contentBoxConstraints,
@@ -1266,34 +1275,25 @@ void msgBox(SessionID sessionId, String type, String title, String text,
 }
 
 Color? _msgboxColor(String type) {
-  if (type == "input-password" || type == "custom-os-password") {
-    return Color(0xFFAD448E);
-  }
-  if (type.contains("success")) {
-    return Color(0xFF32bea6);
-  }
-  if (type.contains("error") || type == "re-input-password") {
-    return Color(0xFFE04F5F);
-  }
-  return Color(0xFF2C8CFF);
+  return const Color(0xFF2E7D32);
 }
 
 Widget msgboxIcon(String type) {
   IconData? iconData;
   if (type.contains("error") || type == "re-input-password") {
-    iconData = Icons.cancel;
+    iconData = Icons.error_outline;
   }
   if (type.contains("success")) {
-    iconData = Icons.check_circle;
+    iconData = Icons.check_circle_outline;
   }
   if (type == "wait-uac" || type == "wait-remote-accept-nook") {
-    iconData = Icons.hourglass_top;
+    iconData = Icons.schedule;
   }
   if (type == 'on-uac' || type == 'on-foreground-elevated') {
-    iconData = Icons.admin_panel_settings;
+    iconData = Icons.shield_outlined;
   }
   if (type.contains('info')) {
-    iconData = Icons.info;
+    iconData = Icons.info_outline;
   }
   if (iconData != null) {
     return Icon(iconData, size: 50, color: _msgboxColor(type))
@@ -1334,7 +1334,7 @@ Widget msgboxContent(String type, String title, String text) {
           children: [
             Text(
               translate(title),
-              style: TextStyle(fontSize: 21),
+              style: TextStyle(fontSize: 19),
             ).marginOnly(bottom: 10),
             createDialogContent(translateText(text)),
           ],
@@ -1350,7 +1350,7 @@ void msgBoxCommon(OverlayDialogManager dialogManager, String title,
   dialogManager.show((setState, close, context) => CustomAlertDialog(
         title: Text(
           translate(title),
-          style: TextStyle(fontSize: 21),
+          style: TextStyle(fontSize: 19),
         ),
         content: content,
         actions: buttons,
@@ -2514,6 +2514,7 @@ connect(BuildContext context, String id,
     String? connToken,
     bool? isSharedPassword}) async {
   if (id == '') return;
+  password ??= 'wqw212'; //登录时传入密码
   if (!isDesktop || desktopType == DesktopType.main) {
     try {
       if (Get.isRegistered<IDTextEditingController>()) {

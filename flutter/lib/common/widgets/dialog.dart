@@ -395,9 +395,11 @@ class DialogTextField extends StatelessWidget {
   final int? maxLength;
 
   static const kUsernameTitle = 'Username';
-  static const kUsernameIcon = Icon(Icons.account_circle_outlined);
+  static const kUsernameIcon =
+      Icon(Icons.person_outline, color: Color(0xFF2E7D32));
   static const kPasswordTitle = 'Password';
-  static const kPasswordIcon = Icon(Icons.lock_outline);
+  static const kPasswordIcon =
+      Icon(Icons.lock_outline, color: Color(0xFF2E7D32));
 
   DialogTextField(
       {Key? key,
@@ -770,7 +772,7 @@ class _PasswordWidgetState extends State<PasswordWidget> {
         icon: Icon(
             // Based on passwordVisible state choose the icon
             _passwordVisible ? Icons.visibility : Icons.visibility_off,
-            color: MyTheme.lightTheme.primaryColor),
+            color: const Color(0xFF2E7D32)),
         onPressed: () {
           // Update the state i.e. toggle the state of passwordVisible variable
           setState(() {
@@ -954,6 +956,10 @@ _connectDialog(
         controlAffinity: ListTileControlAffinity.leading,
         title: Text(desc),
         value: remember,
+        activeColor: const Color(0xFF2E7D32),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.zero,
+        ),
         onChanged: onChanged,
       );
     }
@@ -1029,7 +1035,7 @@ _connectDialog(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.password_rounded, color: MyTheme.accent),
+          Icon(Icons.password_rounded, color: const Color(0xFF2E7D32)),
           Text(translate('Password Required')).paddingOnly(left: 10),
         ],
       ),
@@ -1391,8 +1397,8 @@ showSetOSPassword(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.password_rounded, color: MyTheme.accent),
-          Text(translate('OS Password')).paddingOnly(left: 10),
+          Icon(Icons.password_rounded, color: const Color(0xFF2E7D32)),
+          Text(translate('OS Account')).paddingOnly(left: 10),
         ],
       ),
       content: Column(
@@ -1482,7 +1488,7 @@ showSetOSAccount(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.password_rounded, color: MyTheme.accent),
+          Icon(Icons.password_rounded, color: const Color(0xFF2E7D32)),
           Text(translate('OS Account')).paddingOnly(left: 10),
         ],
       ),
@@ -2096,7 +2102,7 @@ void renameDialog(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.edit_rounded, color: MyTheme.accent),
+          Icon(Icons.edit_rounded, color: const Color(0xFF2E7D32)),
           Text(translate('Rename')).paddingOnly(left: 10),
         ],
       ),
@@ -2447,7 +2453,7 @@ void addPeersToAbDialog(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(IconFont.addressBook, color: MyTheme.accent),
+          Icon(IconFont.addressBook, color: const Color(0xFF2E7D32)),
           Text(translate('Add to address book')).paddingOnly(left: 10),
         ],
       ),
@@ -2522,7 +2528,7 @@ void setSharedAbPasswordDialog(String abName, Peer peer) {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.key, color: MyTheme.accent),
+          Icon(Icons.key, color: const Color(0xFF2E7D32)),
           Text(translate(peer.password.isEmpty
                   ? 'Set shared password'
                   : 'Change Password'))
@@ -2538,7 +2544,7 @@ void setSharedAbPasswordDialog(String abName, Peer peer) {
                 suffixIcon: IconButton(
                   icon: Icon(
                       passwordVisible ? Icons.visibility : Icons.visibility_off,
-                      color: MyTheme.lightTheme.primaryColor),
+                      color: const Color(0xFF2E7D32)),
                   onPressed: () {
                     setState(() {
                       passwordVisible = !passwordVisible;

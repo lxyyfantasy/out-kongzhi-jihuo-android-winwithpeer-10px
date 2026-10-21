@@ -204,29 +204,29 @@ class DraggableMobileActions extends StatelessWidget {
                   shadowColor: Colors.transparent,
                   child: Container(
                     decoration: BoxDecoration(
-                        color: MyTheme.accent.withOpacity(0.4),
+                        color: Colors.transparent,
                         borderRadius:
                             BorderRadius.all(Radius.circular(15 * scale))),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         IconButton(
-                            color: Colors.white,
+                            color: Colors.black87,          // 原来 Colors.white
                             onPressed: onBackPressed,
                             splashRadius: kDesktopIconButtonSplashRadius,
                             icon: const Icon(Icons.arrow_back),
                             iconSize: 24 * scale),
                         IconButton(
-                            color: Colors.white,
+                            color: Colors.black87,          // 原来 Colors.white
                             onPressed: onHomePressed,
                             splashRadius: kDesktopIconButtonSplashRadius,
-                            icon: const Icon(Icons.home),
+                            icon: const Icon(Icons.circle_outlined),
                             iconSize: 24 * scale),
                         IconButton(
-                            color: Colors.white,
+                            color: Colors.black87,          // 原来 Colors.white
                             onPressed: onRecentPressed,
                             splashRadius: kDesktopIconButtonSplashRadius,
-                            icon: const Icon(Icons.more_horiz),
+                            icon: const Icon(Icons.crop_square),
                             iconSize: 24 * scale),
                         const VerticalDivider(
                           width: 0,
@@ -235,7 +235,7 @@ class DraggableMobileActions extends StatelessWidget {
                           endIndent: 10,
                         ),
                         IconButton(
-                            color: Colors.white,
+                            color: Colors.black87,          // 原来 Colors.white
                             onPressed: onHidePressed,
                             splashRadius: kDesktopIconButtonSplashRadius,
                             icon: const Icon(Icons.keyboard_arrow_down),

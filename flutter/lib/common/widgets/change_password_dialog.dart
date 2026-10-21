@@ -84,7 +84,7 @@ Future<bool?> changePasswordDialog() async {
           child: InkWell(
             child: Icon(
               Icons.close,
-              size: 25,
+              size: 22,
               color: Theme.of(context)
                   .textTheme
                   .titleLarge
