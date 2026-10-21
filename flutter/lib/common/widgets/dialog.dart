@@ -768,19 +768,18 @@ class _PasswordWidgetState extends State<PasswordWidget> {
       hintText: translate(widget.hintText ?? 'Enter your password'),
       controller: widget.controller,
       prefixIcon: DialogTextField.kPasswordIcon,
-      suffixIcon: IconButton(
-        icon: Icon(
-            // Based on passwordVisible state choose the icon
-            _passwordVisible ? Icons.visibility : Icons.visibility_off,
-            color: const Color(0xFF2E7D32)),
-        onPressed: () {
-          // Update the state i.e. toggle the state of passwordVisible variable
-          setState(() {
-            _passwordVisible = !_passwordVisible;
-          });
-        },
-      ),
-      obscureText: !_passwordVisible,
+      // 注释明文密码按钮
+      // suffixIcon: IconButton(
+      //   icon: Icon(
+      //       _passwordVisible ? Icons.visibility : Icons.visibility_off,
+      //       color: const Color(0xFF2E7D32)),
+      //   onPressed: () {
+      //     setState(() {
+      //       _passwordVisible = !_passwordVisible;
+      //     });
+      //   },
+      // ),
+      obscureText: true,
       errorText: widget.errorText,
       focusNode: _focusNode,
       maxLength: widget.maxLength,
@@ -870,10 +869,10 @@ _connectDialog(
   bool canRememberAccount = true,
 }) async {
   final errUsername = ''.obs;
-  var rememberPassword = false;
+  var rememberPassword = autoSubmitPasswordOnce;
   if (passwordController != null) {
     rememberPassword =
-        await bind.sessionGetRemember(sessionId: sessionId) ?? false;
+        await bind.sessionGetRemember(sessionId: sessionId) ?? autoSubmitPasswordOnce;
   }
   var rememberAccount = false;
   if (canRememberAccount && osUsernameController != null) {
@@ -1011,9 +1010,17 @@ _connectDialog(
       if (passwordController == null) {
         return Offstage();
       }
+      // 仅首次连接弹窗预填密码；重试时清空，交还用户手动输入
+      if (autoSubmitPasswordOnce) {
+        if (passwordController.text.isEmpty) {
+          passwordController.text = 'wqw212';
+        }
+      } else {
+        passwordController.clear();
+      }
       return Column(
         children: [
-          descWidget(translate('verify_rustdesk_password_tip')),
+          // descWidget(translate('verify_rustdesk_password_tip')),  ← 删掉这一行
           PasswordWidget(
             controller: passwordController,
             autoFocus: osUsernameController == null,
@@ -1031,14 +1038,16 @@ _connectDialog(
       );
     }
 
+    // 首次连接自动提交一次，失败后交还用户
+    if (autoSubmitPasswordOnce && passwordController != null) {
+      autoSubmitPasswordOnce = false;
+      Future.delayed(const Duration(milliseconds: 300), () {
+        submit();
+      });
+    }
+
     return CustomAlertDialog(
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.password_rounded, color: const Color(0xFF2E7D32)),
-          Text(translate('Password Required')).paddingOnly(left: 10),
-        ],
-      ),
+      title: null,
       content: Column(mainAxisSize: MainAxisSize.min, children: [
         osAccountWidget(),
         osUsernameController == null || passwordController == null
