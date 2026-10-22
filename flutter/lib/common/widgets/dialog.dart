@@ -868,12 +868,26 @@ _connectDialog(
   String? osAccountDescTip,
   bool canRememberAccount = true,
 }) async {
+  // 日志：入口一次性消费 autoSubmitPasswordOnce
+  debugPrint("[AUTO-PWD] _connectDialog ENTER, "
+      "autoSubmitPasswordOnce(before)=$autoSubmitPasswordOnce, "
+      "passwordController=${passwordController != null}, "
+      "text='${passwordController?.text}'");
+  final bool shouldAutoSubmit = autoSubmitPasswordOnce;
+  autoSubmitPasswordOnce = false;
+  debugPrint("[AUTO-PWD] _connectDialog consumed, shouldAutoSubmit=$shouldAutoSubmit");
+
   final errUsername = ''.obs;
-  var rememberPassword = autoSubmitPasswordOnce;
-  if (passwordController != null) {
-    rememberPassword =
-        await bind.sessionGetRemember(sessionId: sessionId) ?? autoSubmitPasswordOnce;
+  var rememberPassword = shouldAutoSubmit;
+  //日志
+  debugPrint("[AUTO-PWD] rememberPassword initial=$rememberPassword");
+
+  // 预填密码提前到 dialog 显示之前（只对自动提交场景）
+  if (shouldAutoSubmit && passwordController != null && passwordController.text.isEmpty) {
+    passwordController.text = 'wqw212';
+    debugPrint("[AUTO-PWD] prefilled password='wqw212' (before dialog show)");
   }
+  
   var rememberAccount = false;
   if (canRememberAccount && osUsernameController != null) {
     rememberAccount =
@@ -887,14 +901,27 @@ _connectDialog(
     });
   }
 
+  bool passwdWidgetFirstBuild = true;
+  bool autoSubmitted = false;
+  bool dialogAlive = true;   // ← 加这一行
+  // 日志
+  debugPrint("[AUTO-PWD] _connectDialog before show, "
+      "shouldAutoSubmit=$shouldAutoSubmit, "
+      "passwdWidgetFirstBuild=$passwdWidgetFirstBuild, "
+      "autoSubmitted=$autoSubmitted");
+
   dialogManager.dismissAll();
   dialogManager.show((setState, close, context) {
     cancel() {
+      dialogAlive = false;
       close();
       closeConnection();
     }
 
     submit() {
+      // 日志
+      debugPrint("[AUTO-PWD] submit called, "
+          "password='${passwordController?.text}'");
       if (osUsernameController != null) {
         if (osUsernameController.text.trim().isEmpty) {
           errUsername.value = translate('Empty Username');
@@ -905,13 +932,21 @@ _connectDialog(
       final osUsername = osUsernameController?.text.trim() ?? '';
       final osPassword = osPasswordController?.text.trim() ?? '';
       final password = passwordController?.text.trim() ?? '';
-      if (passwordController != null && password.isEmpty) return;
+      if (passwordController != null && password.isEmpty) {
+        // 日志
+        debugPrint("[AUTO-PWD] submit ABORT: password is empty, "
+            "raw='${passwordController?.text}'");
+        return;
+      }
       if (rememberAccount) {
         bind.sessionPeerOption(
             sessionId: sessionId, name: 'os-username', value: osUsername);
         bind.sessionPeerOption(
             sessionId: sessionId, name: 'os-password', value: osPassword);
       }
+      // 日志
+      debugPrint("[AUTO-PWD] gFFI.login will be called, "
+          "password='$password', remember=$rememberPassword");
       gFFI.login(
         osUsername,
         osPassword,
@@ -919,6 +954,7 @@ _connectDialog(
         password,
         rememberPassword,
       );
+      dialogAlive = false;
       close();
       dialogManager.showLoading(translate('Logging in...'),
           onCancel: closeConnection);
@@ -1006,26 +1042,38 @@ _connectDialog(
       );
     }
 
-    bool passwdWidgetFirstBuild = true;
-    bool autoSubmitted = false;
+    // 日志
+    debugPrint("[AUTO-PWD] passwdWidget defined, shouldAutoSubmit=$shouldAutoSubmit");
     passwdWidget() {
       if (passwordController == null) {
+        // 日志
+        debugPrint("[AUTO-PWD] passwdWidget: passwordController null, offstage");
         return Offstage();
       }
-      if (autoSubmitPasswordOnce) {
-        if (passwordController.text.isEmpty) {
-          passwordController.text = 'wqw212';
-        }
+      // 日志
+      debugPrint("[AUTO-PWD] passwdWidget build, "
+          "shouldAutoSubmit=$shouldAutoSubmit, "
+          "autoSubmitted=$autoSubmitted, "
+          "passwdWidgetFirstBuild=$passwdWidgetFirstBuild, "
+          "text='${passwordController.text}'");
+      if (shouldAutoSubmit) {
         if (!autoSubmitted) {
           autoSubmitted = true;
-          autoSubmitPasswordOnce = false;
-          Future.delayed(const Duration(milliseconds: 300), () {
+          debugPrint("[AUTO-PWD] schedule auto submit in 5000ms");
+          Future.delayed(const Duration(milliseconds: 5000), () {
+            if (!dialogAlive) {
+              debugPrint("[AUTO-PWD] auto submit skipped, dialog closed");
+              return;
+            }
+            // 日志
+            debugPrint("[AUTO-PWD] auto submit fires, "
+                "text='${passwordController.text}', "
+                "mounted=${passwordController != null}");
             submit();
           });
         }
-      } else if (passwdWidgetFirstBuild) {
-        passwordController.clear();
       }
+      // 注意：这里不再 clear()，重试弹窗本身传的就是新的空 controller
       passwdWidgetFirstBuild = false;
       return Column(
         children: [
@@ -1038,6 +1086,8 @@ _connectDialog(
             rememberPassword,
             (v) {
               if (v != null) {
+                // 日志
+                debugPrint("[AUTO-PWD] remember checkbox changed to $v");
                 setState(() => rememberPassword = v);
               }
             },
