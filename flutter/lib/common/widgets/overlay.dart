@@ -16,7 +16,7 @@ final RxInt mobileActionsColorIndex = 0.obs;
 
 Color get mobileActionsColor {
   switch (mobileActionsColorIndex.value) {
-    case 1: return Colors.white;
+    case 1: return Colors.grey[700]!;
     case 2: return Colors.black87;
     default: return const Color(0xFF2E7D32);
   }
@@ -254,12 +254,12 @@ class DraggableMobileActions extends StatelessWidget {
                             splashRadius: kDesktopIconButtonSplashRadius,
                             icon: const Icon(Icons.keyboard_arrow_down),
                             iconSize: 24 * scale),
-                        IconButton(
-                            color: mobileActionsColor,
-                            onPressed: cycleMobileActionsColor,
-                            splashRadius: kDesktopIconButtonSplashRadius,
-                            icon: const Icon(Icons.palette_outlined),
-                            iconSize: 24 * scale),
+                        // IconButton(
+                            // color: mobileActionsColor,
+                            // onPressed: cycleMobileActionsColor,
+                            // splashRadius: kDesktopIconButtonSplashRadius,
+                            // icon: const Icon(Icons.palette_outlined),
+                            // iconSize: 24 * scale),
                       ],
                     )),
                   )));

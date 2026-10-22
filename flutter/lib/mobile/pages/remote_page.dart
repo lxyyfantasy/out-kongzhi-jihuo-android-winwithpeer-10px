@@ -394,9 +394,7 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
               : FloatingActionButton(
                   mini: !keyboardIsVisible,
                   child: Obx(() => Icon(
-                    (keyboardIsVisible || _showGestureHelp)
-                        ? Icons.expand_more
-                        : Icons.expand_less,
+                    Icons.settings,
                     color: mobileActionsColor,
                   )),
                   backgroundColor: Colors.transparent,
