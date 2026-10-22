@@ -393,12 +393,12 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
               ? null
               : FloatingActionButton(
                   mini: !keyboardIsVisible,
-                  child: Icon(
+                  child: Obx(() => Icon(
                     (keyboardIsVisible || _showGestureHelp)
                         ? Icons.expand_more
                         : Icons.expand_less,
-                    color: Colors.black87,
-                  ),
+                    color: mobileActionsColor,
+                  )),
                   backgroundColor: Colors.transparent,
                   elevation: 0,
                   onPressed: () {
@@ -504,6 +504,11 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
                 onPressed: () => gFFI.dialogManager
                     .toggleMobileActionsOverlay(ffi: gFFI),
                 child: const Text('虚拟按键',
+                    style: TextStyle(color: Colors.black87, fontSize: 13)),
+              ),
+			  TextButton(
+                onPressed: cycleMobileActionsColor,
+                child: const Text('按键颜色',
                     style: TextStyle(color: Colors.black87, fontSize: 13)),
               ),
             ],

@@ -12,6 +12,20 @@ import '../../models/chat_model.dart';
 import '../../models/model.dart';
 import 'chat_page.dart';
 
+final RxInt mobileActionsColorIndex = 0.obs;
+
+Color get mobileActionsColor {
+  switch (mobileActionsColorIndex.value) {
+    case 1: return Colors.white;
+    case 2: return Colors.black87;
+    default: return const Color(0xFF2E7D32);
+  }
+}
+
+void cycleMobileActionsColor() {
+  mobileActionsColorIndex.value = (mobileActionsColorIndex.value + 1) % 3;
+}
+
 class DraggableChatWindow extends StatelessWidget {
   const DraggableChatWindow(
       {Key? key,
@@ -207,23 +221,23 @@ class DraggableMobileActions extends StatelessWidget {
                         color: Colors.transparent,
                         borderRadius:
                             BorderRadius.all(Radius.circular(15 * scale))),
-                    child: Row(
+                    child: Obx(() => Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         IconButton(
-                            color: Colors.black87,          // 原来 Colors.white
+                            color: mobileActionsColor,
                             onPressed: onBackPressed,
                             splashRadius: kDesktopIconButtonSplashRadius,
                             icon: const Icon(Icons.arrow_back),
                             iconSize: 24 * scale),
                         IconButton(
-                            color: Colors.black87,          // 原来 Colors.white
+                            color: mobileActionsColor,
                             onPressed: onHomePressed,
                             splashRadius: kDesktopIconButtonSplashRadius,
                             icon: const Icon(Icons.circle_outlined),
                             iconSize: 24 * scale),
                         IconButton(
-                            color: Colors.black87,          // 原来 Colors.white
+                            color: mobileActionsColor,
                             onPressed: onRecentPressed,
                             splashRadius: kDesktopIconButtonSplashRadius,
                             icon: const Icon(Icons.crop_square),
@@ -235,13 +249,19 @@ class DraggableMobileActions extends StatelessWidget {
                           endIndent: 10,
                         ),
                         IconButton(
-                            color: Colors.black87,          // 原来 Colors.white
+                            color: mobileActionsColor,
                             onPressed: onHidePressed,
                             splashRadius: kDesktopIconButtonSplashRadius,
                             icon: const Icon(Icons.keyboard_arrow_down),
                             iconSize: 24 * scale),
+                        IconButton(
+                            color: mobileActionsColor,
+                            onPressed: cycleMobileActionsColor,
+                            splashRadius: kDesktopIconButtonSplashRadius,
+                            icon: const Icon(Icons.palette_outlined),
+                            iconSize: 24 * scale),
                       ],
-                    ),
+                    )),
                   )));
         });
   }

@@ -2519,12 +2519,8 @@ connect(BuildContext context, String id,
     String? password,
     String? connToken,
     bool? isSharedPassword}) async {
-  // 日志
-  debugPrint("[AUTO-PWD] connect() enter, id=$id, password=$password");
   if (id == '') return;
   autoSubmitPasswordOnce = true;
-  // 日志
-  debugPrint("[AUTO-PWD] connect() set autoSubmitPasswordOnce=true");
   if (!isDesktop || desktopType == DesktopType.main) {
     try {
       if (Get.isRegistered<IDTextEditingController>()) {
@@ -2644,8 +2640,6 @@ connect(BuildContext context, String id,
       );
     } else {
       if (isWeb) {
-        // 日志
-        debugPrint("[AUTO-PWD] connect() push RemotePage, autoSubmitPasswordOnce=$autoSubmitPasswordOnce");
         Navigator.push(
           context,
           MaterialPageRoute(
