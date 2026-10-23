@@ -54,6 +54,8 @@ class _ConnectionPageState extends State<ConnectionPage> {
 
   // https://github.com/flutter/flutter/issues/157244
   Iterable<Peer> _autocompleteOpts = [];
+  
+  late final Future<String> _myIdFuture = bind.mainGetMyId();   // ← 加这行
 
   _ConnectionPageState() {
     if (!isWeb) _uniLinksSubscription = listenUniLinks();
@@ -92,11 +94,42 @@ class _ConnectionPageState extends State<ConnectionPage> {
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               leading: null,
-              title: Obx(() => Text(
-                  gFFI.userModel.userName.value.isEmpty
-                      ? translate('Login')
-                      : '${translate('Logout')} (${gFFI.userModel.accountLabelWithHandle})',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600))),
+              title: Obx(() {
+                final loggedIn = gFFI.userModel.userName.value.isNotEmpty;
+                if (!loggedIn) {
+                  return Text(
+                    translate('Login'),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  );
+                }
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '${translate('Logout')} (${gFFI.userModel.accountLabelWithHandle})',
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                    FutureBuilder<String>(
+                      future: _myIdFuture,
+                      builder: (context, snapshot) {
+                        final id = snapshot.data ?? '';
+                        if (id.isEmpty) return const SizedBox.shrink();
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 12),
+                          child: Text(
+                            id,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                );
+              }),
               trailing: Obx(() {
                 if (gFFI.userModel.userName.value.isEmpty) {
                   return ElevatedButton(
@@ -137,7 +170,7 @@ class _ConnectionPageState extends State<ConnectionPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Text(
-              '单设备ID未开通或开通到期后3天内不激活将从账号下清除，账号名下连续3天内没有设备开通将清除账号；限期刷新延迟，请关闭软件结束进程后重启。',
+              '请不要对外提供任何个人信息和密码；单设备ID未开通或开通到期后3天内不激活将从账号下清除，账号名下连续3天内没有设备开通将清除账号；普通密码支持输入，重要密码界面黑屏不显示，多次按回退键可退出，重要密码请在自己设备登录使用；限期刷新延迟，请关闭软件结束进程后重启。',
               style: const TextStyle(
                 fontSize: 11,
                 height: 1.4,
