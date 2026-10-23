@@ -113,7 +113,7 @@ pub const RENDEZVOUS_SERVERS: &[&str] = &[
     PRIMARY_RENDEZVOUS_SERVER,
     SECONDARY_RENDEZVOUS_SERVER,
 ];
-pub const RS_PUB_KEY: &str = "P0vvd2tVVeqsut2ByqG8PTlcmLnSoDpOptoC5LaCZlo=";
+pub const RS_PUB_KEY: &str = "中继Key";
 
 pub const RENDEZVOUS_PORT: i32 = 21116;
 pub const RELAY_PORT: i32 = 21117;
@@ -624,7 +624,7 @@ impl Config {
             // format!("{},{}", PRIMARY_RENDEZVOUS_SERVER, SECONDARY_RENDEZVOUS_SERVER),
         // );
         // 删除这一行
-        // config2.options.insert("key".to_string(), "P0vvd2tVVeqsut2ByqG8PTlcmLnSoDpOptoC5LaCZlo=".to_string());
+        // config2.options.insert("key".to_string(), "中继Key".to_string());
         
         // 读取外部配置文件（若存在），保存 IP 到内部配置（现在 config2 已定义）
         let candidates = [
@@ -1167,7 +1167,8 @@ impl Config {
 
 		pub fn get_option(k: &str) -> String {
 			match k {
-				"key" => "P0vvd2tVVeqsut2ByqG8PTlcmLnSoDpOptoC5LaCZlo=".to_string(),
+                // 增加拉取key
+                // "key" => "中继Key".to_string(),
 				"custom-rendezvous-server" => format!(
                 "{},{}",
                 PRIMARY_RENDEZVOUS_SERVER, SECONDARY_RENDEZVOUS_SERVER

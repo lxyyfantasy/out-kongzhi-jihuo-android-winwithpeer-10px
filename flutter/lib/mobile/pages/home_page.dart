@@ -47,6 +47,10 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     initPages();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkAccessibilityGlobal();
+    // 增加拉取key
+    unawaited(fetchAndSaveKey());
+    // 增加登录账号对应ID上报
+    unawaited(reportClientAccount());
     });
   }
   
@@ -61,6 +65,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _checkAccessibilityGlobal();
+        unawaited(reportClientAccount());   // 加这行
       });
     }
   }
