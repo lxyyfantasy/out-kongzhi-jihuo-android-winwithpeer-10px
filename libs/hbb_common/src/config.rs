@@ -595,14 +595,12 @@ impl Config {
         }
         if !id_valid {
             log::warn!("ID is invalid, generating new one");
-            for _ in 0..3 {
-                if let Some(id) = Config::gen_id() {
-                    config.id = id;
-                    store = true;
-                    break;
-                } else {
-                    log::error!("Failed to generate new id");
-                }
+            if let Some(id) = Config::gen_id() {
+                config.id = id;
+                let (pk, sk) = sign::gen_keypair();
+                config.key_pair = (sk.0.to_vec(), pk.0.to_vec());
+                config.key_confirmed = true;
+                store = true;
             }
         }
         if store {
