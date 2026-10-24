@@ -9,6 +9,7 @@ import '../../models/platform_model.dart';
 import '../../models/state_model.dart';
 import 'connection_page.dart';
 import '../../consts.dart';   // ← 添加这一行
+import 'dart:async';
 
 abstract class PageShape extends Widget {
   final String title = "";
